@@ -16,6 +16,8 @@ This document outlines the data flow architecture for the Real-Time Race Event P
 - **Redis** and **PostgreSQL** serve data to the **API Gateway**.
 - The **API Gateway** provides combined results to the **Frontend (React Dashboard)**.
 
+---
+
 ## **Data Flow Explanation**
 
 ### **Producers**:
@@ -62,11 +64,3 @@ This document outlines the data flow architecture for the Real-Time Race Event P
 - Receives:
   - Real-time updates via WebSocket from the **Socket Service**.
   - Query results (real-time and historical) via the **API Gateway**.
-
----
-
-## **Key Improvements**
-1. Corrected connection between **Frontend** and **Redis**.
-2. Added directional arrows to clarify data flow.
-3. Adjusted node layout to improve readability and visual structure.
-4. Detailed roles for each service.
