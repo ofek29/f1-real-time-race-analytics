@@ -1,64 +1,10 @@
-data simulator:
-
 Car {
     attributes:
         id
-        driver
-        status // 'racing', 'in pit', 'finished'
         speed
-        position 
-        location .:Checkpoint
-        lap time // list?
-        sectors time
-        fuel level
-        tire condition
-        pit stop
-    
+        location : Checkpoint
+
     methods:
         rand_speed()
-        calc_tire_wear()
-        reduce_fuel()
         update_location()
-        update_lap_time()
-
-        pit_stop_action()
 }
-
-Checkpoint {
-    id
-}
-
-Sector {
-    name 
-    start checkpoint // : Checkpoint
-    end checkpoint // : Checkpoint
-}
-
-Track {
-    id
-    length
-    sectors list
-    checkpoints list
-
-    create_sectors_map() // create sector list from checkpoints 
-}
-
-Race {
-    current lap
-    number of laps
-    leaderboard
-}
-
-RaceSimulationEngine:
-    attributes:
-        cars
-        track
-        race
-    
-    methods:
-        initialize_race()
-        start_race()
-        update_car_states()
-        check_lap_completion()
-        check_sector_completion()
-        update_leaderboard()
