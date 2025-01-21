@@ -1,0 +1,75 @@
+name: CI Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      broker:
+        image: confluentinc/cp-kafka:7.8.0
+        ports:
+          - 9092:9092
+          - 29092:29092
+          - 29093:29093
+        options: >-
+          --env KAFKA_NODE_ID=1
+          --env KAFKA_LISTENERS=PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
+          --env KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+          --env KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+          --env KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+          --env KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+          --env KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
+          --env KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+          --env KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+          --env KAFKA_PROCESS_ROLES=broker,controller
+          --env KAFKA_CONTROLLER_QUORUM_VOTERS=1@broker:29093
+          --env KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+          --env KAFKA_LOG_DIRS=/tmp/kraft-combined-logs
+          --env CLUSTER_ID=v-8hKdKQQ_O_VAReqBPr3Q
+
+      control-center:
+        image: confluentinc/cp-enterprise-control-center:7.8.0
+        ports:
+          - 9021:9021
+        options: >-
+          --env CONTROL_CENTER_BOOTSTRAP_SERVERS=broker:29092
+          --env CONTROL_CENTER_REPLICATION_FACTOR=1
+          --env CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS=1
+          --env CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS=1
+          --env CONFLUENT_METRICS_TOPIC_REPLICATION=1
+
+
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Wait for Kafka to be ready
+        run: |
+          timeout 120 sh -c '
+          until nc -z localhost 9092; do
+            echo "Waiting for Kafka port 9092 to be ready...";
+            sleep 5;
+          done
+          echo "Kafka port 9092 is ready!"
+          '
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          cd data-simulator
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          cd data-simulator
+          pytest -s test.py --verbose
+        env:
+          KAFKA_BOOTSTRAP_SERVERS: localhost:9092
