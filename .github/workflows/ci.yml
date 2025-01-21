@@ -27,6 +27,7 @@ jobs:
           --env KAFKA_CONTROLLER_QUORUM_VOTERS=1@broker:29093
           --env KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
           --env KAFKA_LOG_DIRS=/tmp/kraft-combined-logs
+          --env KAFKA_AUTO_CREATE_TOPICS_ENABLE:"true"
           --env CLUSTER_ID=v-8hKdKQQ_O_VAReqBPr3Q
 
       control-center:

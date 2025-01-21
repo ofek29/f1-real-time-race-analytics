@@ -21,6 +21,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       CLUSTER_ID: 'v-8hKdKQQ_O_VAReqBPr3Q'
     volumes:
       - ./kafka-data:/tmp/kraft-combined-logs
