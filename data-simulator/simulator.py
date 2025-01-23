@@ -17,7 +17,7 @@ class DataSimulator:
             print(f"Sent telemetry data for car {car.id} with success: {success}")
 
     def run(self):
-        for i in range(5):
+        for i in range(4):
             self.generate_data()
             time.sleep(2)
         # while True:

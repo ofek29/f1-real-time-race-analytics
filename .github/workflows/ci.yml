@@ -1,6 +1,12 @@
-name: CI Pipeline
+name: test_data_simulator
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
@@ -42,7 +48,6 @@ jobs:
           --env CONFLUENT_METRICS_TOPIC_REPLICATION=1
 
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -71,6 +76,6 @@ jobs:
       - name: Run tests
         run: |
           cd data-simulator
-          pytest -s test.py --verbose
+          pytest -s tests/ --verbose
         env:
           KAFKA_BOOTSTRAP_SERVERS: localhost:9092

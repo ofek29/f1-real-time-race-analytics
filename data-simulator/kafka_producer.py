@@ -19,8 +19,7 @@ def delivery_callback(err, msg):
         print(f"Message delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}")
 
 # Produce some messages
-def send_telemetry_data(car_data) -> bool:
-        topic = 'telemetry_row_data'
+def send_telemetry_data(car_data, topic = 'telemetry_row_data') -> bool:
         producer.produce(
             topic=topic,
             value=car_data,
