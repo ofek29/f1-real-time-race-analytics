@@ -3,6 +3,7 @@ import time
 from models import Car
 from kafka_producer import send_telemetry_data
 
+
 class DataSimulator:
     def __init__(self, num_cars):
         self.cars = [Car(i) for i in range(num_cars)]
@@ -11,8 +12,9 @@ class DataSimulator:
         for car in self.cars:
             car.randomize_speed()
             car.update_location()
-            telemetry = json.dumps({"id": car.id, "speed": car.speed, "location": car.location})
-            print(f"Generated telemetry data for car {car.id}: {telemetry}")
+            telemetry = json.dumps(
+                {"id": car.id, "speed": car.speed, "location": car.location}
+            )
             success = send_telemetry_data(telemetry)
             print(f"Sent telemetry data for car {car.id} with success: {success}")
 

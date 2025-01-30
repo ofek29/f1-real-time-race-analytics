@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'data-simulator/**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'data-simulator/**'
 
 jobs:
   test:
@@ -61,12 +65,15 @@ jobs:
           done
           echo "Kafka port 9092 is ready!"
           '
+        
+      - name: Formatter
+        uses: psf/black@stable
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-
+          python-version: '3.13'
+          
       - name: Install dependencies
         run: |
           cd data-simulator
