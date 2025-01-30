@@ -55,16 +55,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Wait for Kafka to be ready
-        run: |
-          timeout 120 sh -c '
-          until nc -z localhost 9092; do
-            echo "Waiting for Kafka port 9092 to be ready...";
-            sleep 5;
-          done
-          echo "Kafka port 9092 is ready!"
-          '
         
       - name: Formatter
         uses: psf/black@stable
@@ -75,14 +65,21 @@ jobs:
           python-version: '3.13'
           
       - name: Install dependencies
+        working-directory: data-simulator
         run: |
-          cd data-simulator
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+    
+      - name: Check static typing
+        working-directory: data-simulator
+        run: mypy ./
+
+      - name: Check Kafka broker
+        working-directory: data-simulator
+        run: python tests/check_kafka_broker.py
 
       - name: Run tests
-        run: |
-          cd data-simulator
-          pytest -s tests/ --verbose
+        working-directory: data-simulator
+        run: pytest -s tests/ --verbose
         env:
           KAFKA_BOOTSTRAP_SERVERS: localhost:9092
