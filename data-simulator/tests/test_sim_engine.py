@@ -6,6 +6,8 @@ from confluent_kafka import Consumer
 from confluent_kafka.admin import AdminClient, NewTopic
 from simulator import DataSimulator
 
+CAR_COUNT = 4
+
 # Kafka Consumer Configuration
 bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 print(f"KAFKA_BOOTSTRAP_SERVERS: {bootstrap_servers}")
@@ -16,18 +18,22 @@ consumer_conf = {
 }
 
 
+@pytest.fixture(scope="module")
+def kafka_admin_client():
+    client = AdminClient({"bootstrap.servers": bootstrap_servers})
+    yield client
+
+
 @pytest.fixture
-def setup_kafka():
-    admin_client = AdminClient({"bootstrap.servers": bootstrap_servers})
+def setup_kafka(kafka_admin_client):
     topic_name = "telemetry_row_data"
 
     # Check if the topic exists, otherwise create it
-    existing_topics = admin_client.list_topics(timeout=10).topics
+    existing_topics = kafka_admin_client.list_topics(timeout=10).topics
     if topic_name not in existing_topics:
         new_topic = NewTopic(topic_name, num_partitions=1, replication_factor=1)
-        admin_client.create_topics([new_topic])
+        kafka_admin_client.create_topics([new_topic])
         print(f"Topic '{topic_name}' created.")
-        time.sleep(2)  # Wait for the topic to become available
     else:
         print(f"Topic '{topic_name}' already exists.")
     yield
@@ -47,11 +53,10 @@ def kafka_consumer():
 
 
 def test_data_simulator_integration(setup_kafka, kafka_consumer):
-    num_cars = 3
-    simulator = DataSimulator(num_cars)
+    simulator = DataSimulator(CAR_COUNT)
     simulator.run()
     # Verify messages for each car
-    for _ in range(num_cars):
+    for _ in range(CAR_COUNT):
         msg = kafka_consumer.poll(timeout=10.0)
         print(f"Received message: {msg.value()}")
         assert msg is not None, "No message received for car telemetry."

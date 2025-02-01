@@ -16,18 +16,22 @@ consumer_conf = {
 }
 
 
+@pytest.fixture(scope="module")
+def kafka_admin_client():
+    client = AdminClient({"bootstrap.servers": bootstrap_servers})
+    yield client
+
+
 @pytest.fixture
-def setup_kafka():
-    admin_client = AdminClient({"bootstrap.servers": bootstrap_servers})
+def setup_kafka(kafka_admin_client):
     topic_name = "telemetry_manual_test"
 
     # Check if the topic exists, otherwise create it
-    existing_topics = admin_client.list_topics(timeout=10).topics
+    existing_topics = kafka_admin_client.list_topics(timeout=10).topics
     if topic_name not in existing_topics:
         new_topic = NewTopic(topic_name, num_partitions=1, replication_factor=1)
-        admin_client.create_topics([new_topic])
+        kafka_admin_client.create_topics([new_topic])
         print(f"Topic '{topic_name}' created.")
-        time.sleep(2)  # Wait for the topic to become available
     else:
         print(f"Topic '{topic_name}' already exists.")
     yield
