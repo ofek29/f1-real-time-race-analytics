@@ -1,6 +1,9 @@
 import os
 import time
 from confluent_kafka.admin import AdminClient
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from logger import logger
 
 bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
