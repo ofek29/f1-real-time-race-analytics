@@ -1,12 +1,12 @@
 from simulator import DataSimulator
-
-simulator = DataSimulator(5)
+from logger import logger
 
 
 def main():
-    print("Starting data generation")
+    logger.info("Data Simulator started")
+    simulator = DataSimulator(5)
     simulator.run()
-    print("Data generation complete")
+    logger.info("Data Simulator stopped")
 
 
 if __name__ == "__main__":

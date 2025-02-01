@@ -1,5 +1,6 @@
 import json
 import time
+from logger import logger
 from models import Car
 from kafka_producer import send_telemetry_data
 
@@ -16,10 +17,12 @@ class DataSimulator:
                 {"id": car.id, "speed": car.speed, "location": car.location}
             )
             success = send_telemetry_data(telemetry)
-            print(f"Sent telemetry data for car {car.id} with success: {success}")
+            if not success:
+                logger.error("Failed to send data to Kafka")
+                return
 
     def run(self):
-        for i in range(4):
+        for _ in range(4):
             self.generate_data()
             time.sleep(2)
         # while True:

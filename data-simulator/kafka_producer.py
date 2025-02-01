@@ -1,21 +1,30 @@
 import os
+from logger import logger
 from confluent_kafka import Producer
+from tests.check_kafka_readiness import check_kafka_ready
+
 
 # Configuration for the Kafka producer
 bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 config = {"bootstrap.servers": bootstrap_servers}
 
 # Create Producer instance
-producer = Producer(config)
-print("Producer instance created.")
+try:
+    if not check_kafka_ready():
+        raise Exception("Kafka is not available")
+    producer = Producer(config)
+    logger.info("Producer instance created")
+except Exception as e:
+    logger.error(f"Failed to create producer: {e}")
+    exit(1)
 
 
 # Delivery callback for produced messages
 def delivery_callback(err, msg):
     if err:
-        print(f"Message failed delivery: {err}")
+        logger.error(f"Message delivery failed: {err}")
     else:
-        print(
+        logger.debug(
             f"Message delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}"
         )
 
