@@ -73,7 +73,7 @@ jobs:
 
       - name: Check Kafka broker
         working-directory: data-simulator
-        run: python tests/check_kafka_broker.py
+        run: python tests/check_kafka_readiness.py
 
       - name: Run tests
         working-directory: data-simulator
