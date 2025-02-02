@@ -18,7 +18,7 @@ consumer_conf = {
 }
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def kafka_admin_client():
     client = AdminClient({"bootstrap.servers": bootstrap_servers})
     yield client
