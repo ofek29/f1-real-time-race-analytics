@@ -18,7 +18,7 @@ consumer_conf = {
 }
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def kafka_admin_client():
     client = AdminClient({"bootstrap.servers": bootstrap_servers})
     yield client
@@ -52,7 +52,11 @@ def kafka_consumer():
     consumer.close()
 
 
-def test_data_simulator_integration(setup_kafka, kafka_consumer):
+def test_setup_kafka(setup_kafka):
+    pass
+
+
+def test_data_simulator_integration(kafka_consumer):
     simulator = DataSimulator(CAR_COUNT)
     simulator.run()
     # Verify messages for each car

@@ -16,7 +16,7 @@ consumer_conf = {
 }
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def kafka_admin_client():
     client = AdminClient({"bootstrap.servers": bootstrap_servers})
     yield client
@@ -50,7 +50,11 @@ def kafka_consumer():
     consumer.close()
 
 
-def test_kafka_producer_consumer_integration(setup_kafka, kafka_consumer):
+def test_setup_kafka(setup_kafka):
+    pass
+
+
+def test_kafka_producer_consumer_integration(kafka_consumer):
     # Test data
     test_data = json.dumps({"id": 1, "speed": 120, "location": 53})
     # Produce the message
