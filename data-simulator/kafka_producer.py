@@ -1,7 +1,7 @@
 import os
 from logger import logger
 from confluent_kafka import Producer
-from tests.check_kafka_readiness import check_kafka_ready
+from utils.check_kafka_readiness import check_kafka_ready
 
 
 # Configuration for the Kafka producer
@@ -12,10 +12,11 @@ config = {"bootstrap.servers": bootstrap_servers}
 try:
     if not check_kafka_ready():
         raise Exception("Kafka is not available")
+
     producer = Producer(config)
     logger.info("Producer instance created")
-except Exception as e:
-    logger.error(f"Failed to create producer: {e}")
+except Exception as err:
+    logger.error(f"Failed to create producer: {err}")
     exit(1)
 
 
