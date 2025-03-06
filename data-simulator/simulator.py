@@ -2,10 +2,11 @@ import json
 import os
 import time
 from logger import logger
-from models import Car
+from car import Car
 from kafka_producer import send_telemetry_data
 
 app_mode = os.getenv("APP_RUNNING_MODE", "DEBUG")
+NUMBER_OF_LAPS = 4
 
 
 class DataSimulator:
@@ -26,11 +27,10 @@ class DataSimulator:
 
     def run(self):
         if app_mode == "DEBUG":
-            logger.debug("Running in DEV mode (4 laps)")
-            for _ in range(4):
+            logger.debug("Running in DEV mode")
+            for _ in range(NUMBER_OF_LAPS):
                 self.generate_data()
-                time.sleep(2)
         else:
-            logger.info("Running in PROD mode (continuous)")
+            logger.info("Running in PROD mode")
             while True:
                 self.generate_data()
