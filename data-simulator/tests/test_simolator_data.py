@@ -12,7 +12,7 @@ CAR_COUNT = 5  # Same as in main.py
 NUMBER_OF_LAPS = 4  # Same as in simulator.py
 
 
-def test_simulator_e2e():
+def test_simulator():
     """
     End-to-end test for the simulator:
     1. Run main file with APP_RUNNING_MODE=DEBUG
