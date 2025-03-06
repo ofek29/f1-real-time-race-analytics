@@ -39,19 +39,12 @@ jobs:
           KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
           KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
           CLUSTER_ID: 'v-8hKdKQQ_O_VAReqBPr3Q'
-          
-
-      control-center:
-        image: confluentinc/cp-enterprise-control-center:7.8.0
-        ports:
-          - 9021:9021
-        env:
-          CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker:29092'
-          CONTROL_CENTER_REPLICATION_FACTOR: 1
-          CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
-          CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
-          CONFLUENT_METRICS_TOPIC_REPLICATION: 1
-
+        options: >-
+          --health-cmd "kafka-topics --bootstrap-server broker:29092 --list"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 20s
 
     steps:
       - name: Checkout code
@@ -65,17 +58,13 @@ jobs:
         with:
           python-version: '3.13'
           cache: 'pip'
-      - run: pip install -r data-simulator/requirements.txt
+      
+      - name: Install dependencies
+        run: pip install -r data-simulator/requirements.txt
 
       - name: Check static typing
         working-directory: data-simulator
         run: mypy ./
-
-      - name: Check Kafka broker
-        working-directory: data-simulator
-        run: python tests/check_kafka_readiness.py
-        env:
-          KAFKA_BOOTSTRAP_SERVERS: localhost:9092
 
       - name: Run tests
         working-directory: data-simulator
